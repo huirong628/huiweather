@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 public class ChooseAreaActivity extends Activity{
 	
-	private static final String TAG = "-0ChooseAreaActivity";
+	private static final String TAG = "ChooseAreaActivity";
 	
 	private TextView titleText;
 	private ListView listView;
