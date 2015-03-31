@@ -23,7 +23,7 @@ public class HuiWeatherOpenHelper extends SQLiteOpenHelper {
 			+ "id integer primary key autoincrement," 
 			+ "county_name text,"
 			+ "county_code text,"
-			+ "city_id_integer)";
+			+ "city_id integer)";
 
 	public HuiWeatherOpenHelper(Context context, String name,
 			CursorFactory factory, int version) {

@@ -14,8 +14,10 @@ import com.huiweather.app.util.Utility;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.os.BaseBundle;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -57,11 +59,21 @@ public class ChooseAreaActivity extends Activity{
 	public static final int LEVEL_CITY = 1;
 	public static final int LEVEL_COUNTY = 2;
 	
+	private boolean isFromWeatherActivity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate()");
+		isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		if(prefs.getBoolean("city_selected", false) && !isFromWeatherActivity){
+			Intent intent = new Intent(this,WeatherActivity.class);
+			startActivity(intent);
+			finish();
+			return;
+		}
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_area);
 		titleText =  (TextView) findViewById(R.id.title_text);
@@ -74,12 +86,20 @@ public class ChooseAreaActivity extends Activity{
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				Log.i(TAG,"onItemClick(),currentLevel =" +currentLevel);
 				if(currentLevel == LEVEL_PROVINCE ){
 					selectedProvince = provinceList.get(position);
 					queryCities();
-				}else if(currentLevel == LEVEL_COUNTY){
+					
+				}else if(currentLevel == LEVEL_CITY){
 					selectedCity = cityList.get(position);
 					queryCounties();
+				}else if(currentLevel == LEVEL_COUNTY){
+					String countyCode = countyList.get(position).getCountyCode();
+					Intent intent = new Intent(ChooseAreaActivity.this,WeatherActivity.class);
+					intent.putExtra("county_code", countyCode);
+					startActivity(intent);
+					finish();
 				}
 				
 			}
@@ -89,7 +109,7 @@ public class ChooseAreaActivity extends Activity{
 
 	protected void queryCounties() {
 		countyList = huiWeatherDB.loadCounties(selectedCity.getId());
-		if(cityList.size() >0){
+		if(countyList.size() >0){
 			dataList.clear();
 			for(County county :countyList)
 				dataList.add(county.getCountyName());
@@ -203,8 +223,13 @@ public class ChooseAreaActivity extends Activity{
 			queryCities();
 		else if(currentLevel == LEVEL_CITY)
 			queryProvinces();
-		else
+		else{
+			if(isFromWeatherActivity){
+				Intent intent = new Intent(this,WeatherActivity.class);
+				startActivity(intent);
+			}
 			finish();
+		}
 		
 	}
 	
