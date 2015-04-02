@@ -1,6 +1,7 @@
 package com.huiweather.app.ui;
 
 import com.huiweather.app.R;
+import com.huiweather.app.service.AutoUpdateService;
 import com.huiweather.app.util.HttpCallbackListener;
 import com.huiweather.app.util.HttpUtil;
 import com.huiweather.app.util.Utility;
@@ -67,9 +68,13 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		mCurrentDate.setText(prefs.getString("current_date", ""));
 		mWeatherInfoLayout.setVisibility(View.VISIBLE);
 		mCityName.setVisibility(View.VISIBLE);
+		startAutoUpdateService();
 		
-		
-		
+	}
+	
+	private void startAutoUpdateService(){
+		Intent intent = new Intent(this,AutoUpdateService.class);
+		startService(intent);
 	}
 
 	private void queryWeatherCode(String countyCode) {
